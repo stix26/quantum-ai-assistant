@@ -11,6 +11,32 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
 - Modern, responsive UI with Material-UI
 - Secure API key management
 
+## Architecture Overview
+
+The project is structured around common chatbot components:
+
+- **User Interface (UI):** React frontend located in `frontend/`.
+- **Natural Language Understanding (NLU):** Placeholder implementation in `backend/components/nlu.py`.
+- **Dialog Manager:** In-memory session tracking in `backend/components/dialog_manager.py`.
+- **Natural Language Generation (NLG):** Basic response templates in `backend/components/nlg.py`.
+- **Response Handler:** Formats replies for the UI in `backend/components/response_handler.py`.
+- **Database/Knowledge Base:** PostgreSQL used via SQLAlchemy models in `backend/models.py`.
+- **Integration Layer:** Stubs for external calls in `backend/components/integration.py`.
+- **Authentication and Authorization:** API key header handled in `backend/main.py`.
+- **Analytics and Logging:** Prometheus metrics and Loguru logging in the backend.
+- **Testing and Deployment:** Docker Compose orchestrates services; frontend uses React testing tools.
+- **Speech-to-Text / Text-to-Speech:** Placeholder implementation in `backend/components/speech.py`.
+- **Sentiment Analysis:** Basic sentiment scoring in `backend/components/sentiment.py`.
+- **Personalization:** Simple user preference storage in `backend/components/personalization.py`.
+
+## Optional Features
+
+These modules provide additional capabilities beyond the core chatbot workflow:
+
+- **Speech-to-Text / Text-to-Speech** converts between audio and text.
+- **Sentiment Analysis** evaluates user mood.
+- **Personalization** adapts replies based on user preferences.
+
 ## Prerequisites
 
 - Docker and Docker Compose
