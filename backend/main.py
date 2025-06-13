@@ -37,18 +37,6 @@ from qiskit.algorithms.optimizers import COBYLA, SPSA, ADAM
 from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, EfficientSU2
 from qiskit.algorithms import VQC, VQE
 from qiskit.opflow import Z, I, X, Y
-from qiskit.aqua.algorithms import QSVM
-from qiskit.aqua.components.optimizers import SPSA
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion
-from qiskit.aqua.utils import split_dataset_to_data_and_labels
-from qiskit.aqua.algorithms import QSVM
-from qiskit.aqua.components.optimizers import SPSA
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion
-from qiskit.aqua.utils import split_dataset_to_data_and_labels
-from qiskit.aqua.algorithms import QSVM
-from qiskit.aqua.components.optimizers import SPSA
-from qiskit.aqua.components.feature_maps import SecondOrderExpansion
-from qiskit.aqua.utils import split_dataset_to_data_and_labels
 from .quantum_service import quantum_service
 from .config import settings
 from .database import get_session, Base, engine, AsyncSessionLocal
