@@ -53,6 +53,10 @@ from .quantum_service import quantum_service
 from .config import settings
 from .database import get_session, Base, engine, AsyncSessionLocal
 from .models import Conversation
+from .components.nlu import analyze_intent_entities
+from .components.dialog_manager import DialogManager
+from .components.nlg import generate_text
+from .components.response_handler import format_response
 
 # Load environment variables
 load_dotenv()
@@ -101,6 +105,9 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
+# Simple in-memory dialog manager instance
+dialog_manager = DialogManager()
+
 # Prometheus metrics
 REQUEST_COUNT = Counter('quantum_chatbot_requests_total', 'Total number of requests')
 PROCESSING_TIME = Histogram('quantum_chatbot_processing_seconds', 'Time spent processing requests')
@@ -132,6 +139,8 @@ class QuantumResponse(BaseModel):
     language_detection: Optional[Dict[str, float]] = None
     quantum_circuit_visualization: Optional[str] = None
     next_best_actions: Optional[List[Dict[str, Any]]] = None
+    nlu: Optional[Dict[str, Any]] = None
+    dialog_state: Optional[Dict[str, Any]] = None
 
 # Initialize quantum services with advanced error handling
 try:
@@ -241,8 +250,12 @@ def calculate_quantum_correlation(statevector: Statevector) -> float:
 async def generate_quantum_response(message: str) -> QuantumResponse:
     start_time = datetime.now()
     REQUEST_COUNT.inc()
-    
+
     try:
+        nlu = analyze_intent_entities(message)
+        dialog_state = dialog_manager.update_state("default", nlu["intent"])
+        nlg_text = generate_text(nlu["intent"])
+
         # Create and analyze quantum circuit
         circuit = create_quantum_circuit(message)
         quantum_metrics = analyze_quantum_state(circuit)
@@ -277,15 +290,16 @@ async def generate_quantum_response(message: str) -> QuantumResponse:
             "visualization": circuit_visualization
         }
         
-        # Generate response using quantum-enhanced NLP
-        response = generate_response_from_quantum_state(quantum_state, message)
+        # Generate response using quantum-enhanced NLP and simple NLG
+        base_text = generate_response_from_quantum_state(quantum_state, nlg_text)
+        formatted = format_response(base_text, {"nlu": nlu, "state": dialog_state})
         
         # Calculate processing time
         processing_time = (datetime.now() - start_time).total_seconds()
         PROCESSING_TIME.observe(processing_time)
         
         return QuantumResponse(
-            response=response,
+            response=formatted["text"],
             quantum_state=quantum_state,
             confidence=calculate_confidence(quantum_metrics),
             processing_time=processing_time,
@@ -294,7 +308,9 @@ async def generate_quantum_response(message: str) -> QuantumResponse:
             emotion_analysis=analyze_emotion(message),
             language_detection=detect_language(message),
             quantum_circuit_visualization=circuit_visualization,
-            next_best_actions=generate_next_actions(quantum_metrics, message)
+            next_best_actions=generate_next_actions(quantum_metrics, message),
+            nlu=nlu,
+            dialog_state=dialog_state
         )
     
     except Exception as e:
