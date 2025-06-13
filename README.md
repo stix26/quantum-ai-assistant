@@ -16,7 +16,7 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
 - Docker and Docker Compose
 - IBM Quantum Experience API key
 - Node.js 16+ (for local development)
-- Python 3.9+ (for local development)
+- Python 3.11 (for local development and Docker builds)
 
 ## Setup
 
@@ -88,6 +88,8 @@ uvicorn main:app --reload
 ```bash
 cd frontend
 npm install
+# Install TypeScript types for D3
+npm install --save-dev @types/d3
 ```
 
 2. Start the development server:
