@@ -14,6 +14,7 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
 ## Prerequisites
 
 - Docker and Docker Compose
+- PostgreSQL 15 (local or Docker)
 - IBM Quantum Experience API key
 - Node.js 16+ (for local development)
 - Python 3.11 (for local development and Docker builds)
@@ -47,6 +48,10 @@ openssl rand -hex 32
 
 5. Add the generated key to your `.env` file.
 
+6. Ensure a PostgreSQL database is available. Docker Compose will automatically
+   launch one, but for local development without Docker you'll need a running
+   PostgreSQL 15 instance and to update `DATABASE_URL` in your `.env` file.
+
 ## Running the Application
 
 ### Using Docker (Recommended)
@@ -60,6 +65,7 @@ docker-compose up --build
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API Documentation: http://localhost:8000/docs
+ - PostgreSQL: port 5432 on `db` service
 
 ### Local Development
 
@@ -81,6 +87,8 @@ pip install -r requirements.txt
 ```bash
 uvicorn main:app --reload
 ```
+4. Make sure PostgreSQL is running locally and that `DATABASE_URL` in your `.env`
+   points to it.
 
 #### Frontend
 
