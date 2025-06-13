@@ -18,6 +18,8 @@ import redis
 from prometheus_client import Counter, Histogram, start_http_server
 import aiohttp
 import tensorflow as tf
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from transformers import AutoTokenizer, AutoModel
 import torch
 from sklearn.preprocessing import StandardScaler
@@ -49,6 +51,8 @@ from qiskit.aqua.components.feature_maps import SecondOrderExpansion
 from qiskit.aqua.utils import split_dataset_to_data_and_labels
 from .quantum_service import quantum_service
 from .config import settings
+from .database import get_session, Base, engine, AsyncSessionLocal
+from .models import Conversation
 
 # Load environment variables
 load_dotenv()
@@ -61,6 +65,17 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
 )
+
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+@app.on_event("shutdown")
+async def on_shutdown() -> None:
+    await engine.dispose()
 
 # Advanced CORS configuration
 app.add_middleware(
@@ -355,7 +370,8 @@ async def chat(
     message: ChatMessage,
     background_tasks: BackgroundTasks,
     request: Request,
-    api_key: str = Security(api_key_header)
+    api_key: str = Security(api_key_header),
+    session: AsyncSession = Depends(get_session)
 ):
     # Rate limiting
     client_ip = request.client.host
@@ -372,10 +388,19 @@ async def chat(
     
     # Process in background
     response = await generate_quantum_response(message.message)
-    
+
+    conversation = Conversation(
+        session_id=message.session_id,
+        user_message=message.message,
+        bot_response=response.response,
+        quantum_state=response.quantum_state
+    )
+    session.add(conversation)
+    await session.commit()
+
     # Log the response
     logger.info(f"Generated response with confidence: {response.confidence}")
-    
+
     return response
 
 @app.websocket("/ws")
@@ -386,6 +411,17 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
             message = ChatMessage(message=data, timestamp=datetime.now())
             response = await generate_quantum_response(message.message)
+
+            async with AsyncSessionLocal() as session:
+                conversation = Conversation(
+                    session_id=message.session_id,
+                    user_message=message.message,
+                    bot_response=response.response,
+                    quantum_state=response.quantum_state,
+                )
+                session.add(conversation)
+                await session.commit()
+
             await websocket.send_json(response.dict())
     except Exception as e:
         logger.error(f"WebSocket error: {str(e)}")
