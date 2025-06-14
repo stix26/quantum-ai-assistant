@@ -62,6 +62,7 @@ from .components.response_handler import format_response
 from .components.speech import speech_to_text, text_to_speech
 from .components.sentiment import analyze_sentiment
 from .components.personalization import PersonalizationEngine
+from .components.summarization import summarize_text
 
 # Load environment variables
 load_dotenv()
@@ -149,6 +150,7 @@ class QuantumResponse(BaseModel):
     user_preferences: Optional[Dict[str, str]] = None
     nlu: Optional[Dict[str, Any]] = None
     dialog_state: Optional[Dict[str, Any]] = None
+    summary: Optional[str] = None
 
 # Initialize quantum services with advanced error handling
 try:
@@ -332,6 +334,7 @@ async def generate_quantum_response(message: str) -> QuantumResponse:
         # Generate response using quantum-enhanced NLP and simple NLG
         base_text = generate_response_from_quantum_state(quantum_state, nlg_text)
         formatted = format_response(base_text, {"nlu": nlu, "state": dialog_state})
+        summary = summarize_text(formatted["text"]) if formatted.get("text") else None
         
         # Calculate processing time
         processing_time = (datetime.now() - start_time).total_seconds()
@@ -351,7 +354,8 @@ async def generate_quantum_response(message: str) -> QuantumResponse:
             sentiment=sentiment,
             user_preferences=user_prefs,
             nlu=nlu,
-            dialog_state=dialog_state
+            dialog_state=dialog_state,
+            summary=summary
         )
     
     except Exception as e:
@@ -418,7 +422,8 @@ async def root():
             "Advanced emotion analysis",
             "Language detection",
             "Quantum metrics analysis",
-            "Next best action prediction"
+            "Next best action prediction",
+            "Automatic summarization"
         ]
     }
 

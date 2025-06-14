@@ -65,6 +65,11 @@ cp .env.example .env
 
 # API Key for authentication (generate a new secure key)
 API_KEY=your_secure_api_key_here
+# IBM Quantum Experience credentials
+IBM_QUANTUM_API_KEY=your_ibm_quantum_api_key_here
+IBM_QUANTUM_HUB=ibm-q
+IBM_QUANTUM_GROUP=open
+IBM_QUANTUM_PROJECT=main
 ```
 
 4. Generate a secure API key:
