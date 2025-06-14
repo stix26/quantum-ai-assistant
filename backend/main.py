@@ -6,7 +6,12 @@ from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any, Union
 import os
 from dotenv import load_dotenv
-from loguru import logger
+try:
+    from loguru import logger
+except Exception:  # pragma: no cover - optional dependency
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 import json
 import asyncio
 from datetime import datetime, timedelta
@@ -26,18 +31,27 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 from scipy.stats import entropy
 import networkx as nx
-from qiskit import QuantumCircuit, execute, Aer, IBMQ, QuantumRegister, ClassicalRegister
-from qiskit.quantum_info import Statevector, Operator, SparsePauliOp
-from qiskit.visualization import plot_bloch_multivector
-from qiskit.providers.ibmq import least_busy
-from qiskit_ibm_runtime import QiskitRuntimeService, Session, Sampler, Options, Estimator
-from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
-from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
-from qiskit.algorithms.optimizers import COBYLA, SPSA, ADAM
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, EfficientSU2
-from qiskit.algorithms import VQC, VQE
-from qiskit.opflow import Z, I, X, Y
-from .quantum_service import quantum_service
+try:
+    from qiskit import QuantumCircuit, execute, Aer, IBMQ, QuantumRegister, ClassicalRegister
+    from qiskit.quantum_info import Statevector, Operator, SparsePauliOp
+    from qiskit.visualization import plot_bloch_multivector
+    from qiskit.providers.ibmq import least_busy
+    from qiskit_ibm_runtime import QiskitRuntimeService, Session, Sampler, Options, Estimator
+    from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
+    from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
+    from qiskit.algorithms.optimizers import COBYLA, SPSA, ADAM
+    from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes, EfficientSU2
+    from qiskit.algorithms import VQC, VQE
+    from qiskit.opflow import Z, I, X, Y
+    QISKIT_AVAILABLE = True
+except Exception:  # pragma: no cover - optional dependency
+    QuantumCircuit = None
+    Statevector = None
+    QISKIT_AVAILABLE = False
+if QISKIT_AVAILABLE:
+    from .quantum_service import quantum_service
+else:  # pragma: no cover - fallback
+    quantum_service = None
 from .config import settings
 from .database import get_session, Base, engine, AsyncSessionLocal
 from .models import Conversation
@@ -166,7 +180,13 @@ quantum_executor = ThreadPoolExecutor(max_workers=8)
 ml_executor = ProcessPoolExecutor(max_workers=4)
 
 # Advanced quantum circuit generation with multiple layers
-def create_quantum_circuit(text: str, num_qubits: int = 4) -> QuantumCircuit:
+from typing import Optional
+
+def create_quantum_circuit(text: str, num_qubits: int = 4) -> Optional[QuantumCircuit]:
+    if not QISKIT_AVAILABLE:
+        logger.warning("Qiskit not available - returning None for circuit")
+        return None
+
     circuit = QuantumCircuit(num_qubits)
     
     # Convert text to quantum state using advanced encoding
@@ -203,7 +223,11 @@ def create_quantum_circuit(text: str, num_qubits: int = 4) -> QuantumCircuit:
     return circuit
 
 # Advanced quantum state analysis
-def analyze_quantum_state(circuit: QuantumCircuit) -> Dict[str, float]:
+def analyze_quantum_state(circuit: Optional[QuantumCircuit]) -> Dict[str, float]:
+    if not QISKIT_AVAILABLE or circuit is None:
+        logger.warning("Qiskit not available - returning empty quantum metrics")
+        return {"entanglement": 0.0, "purity": 0.0, "coherence": 0.0}
+
     statevector = Statevector.from_instruction(circuit)
     
     # Calculate advanced quantum metrics
@@ -239,6 +263,25 @@ def calculate_quantum_correlation(statevector: Statevector) -> float:
     # Calculate quantum correlation
     density_matrix = np.outer(statevector.data, np.conj(statevector.data))
     return np.abs(np.trace(density_matrix @ density_matrix))
+
+def calculate_entanglement(statevector: Statevector) -> float:
+    # Placeholder entanglement metric
+    return float(np.var(np.abs(statevector.data)))
+
+def calculate_purity(statevector: Statevector) -> float:
+    density_matrix = np.outer(statevector.data, np.conj(statevector.data))
+    return float(np.trace(density_matrix @ density_matrix).real)
+
+def calculate_coherence(statevector: Statevector) -> float:
+    return float(np.sum(np.abs(statevector.data)))
+
+def calculate_confidence(metrics: Dict[str, float]) -> float:
+    return float(np.mean(list(metrics.values()))) if metrics else 0.0
+
+def generate_response_from_quantum_state(quantum_state: Dict[str, Any], nlg_text: str) -> str:
+    metrics = quantum_state.get("metrics", {})
+    confidence = calculate_confidence(metrics)
+    return f"{nlg_text} (confidence {confidence:.2f})"
 
 # Enhanced quantum response generation with machine learning
 async def generate_quantum_response(message: str) -> QuantumResponse:
