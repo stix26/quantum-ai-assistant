@@ -6,7 +6,12 @@ from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any, Union
 import os
 from dotenv import load_dotenv
-from loguru import logger
+try:
+    from loguru import logger
+except Exception:  # pragma: no cover - optional dependency
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 import json
 import asyncio
 from datetime import datetime, timedelta
