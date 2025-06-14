@@ -14,7 +14,8 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
 ## Prerequisites
 
 - Docker and Docker Compose
-- IBM Quantum Experience API key
+ - IBM Quantum Experience API key
+ - (Optional) OpenAI API key for enhanced language processing
 - Node.js 16+ (for local development)
 - Python 3.11 (for local development)
 
@@ -36,8 +37,17 @@ cp .env.example .env
 # SECURITY WARNING: Never commit this file to version control
 # SECURITY WARNING: Keep your API keys private and secure
 
-# API Key for authentication (generate a new secure key)
+# API key used by the backend for authentication
 API_KEY=your_secure_api_key_here
+
+# IBM Quantum Experience credentials
+IBM_QUANTUM_API_KEY=your_ibm_quantum_api_key_here
+IBM_QUANTUM_HUB=ibm-q
+IBM_QUANTUM_GROUP=open
+IBM_QUANTUM_PROJECT=main
+
+# Optional OpenAI API key for enhanced language features
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 4. Generate a secure API key:
@@ -103,6 +113,10 @@ npm start
 - Keep your API keys secure and private
 - Regularly rotate your API keys
 - Monitor your IBM Quantum account for unusual activity
+- The IBM Quantum API key and the OpenAI API key are used for different
+  services and are not interchangeable. IBM credentials give you access to
+  quantum hardware and simulators, while the optional OpenAI key enables
+  language processing features.
 
 ## Contributing
 
