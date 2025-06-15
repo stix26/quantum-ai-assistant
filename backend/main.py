@@ -394,6 +394,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", 8000))
     # Start Prometheus metrics server
-    start_http_server(8000)
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    start_http_server(port)
+    uvicorn.run(app, host=host, port=port)
