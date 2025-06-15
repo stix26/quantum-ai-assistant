@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+
+    # Offline/testing settings
+    USE_QISKIT_MOCK: bool = os.getenv("USE_QISKIT_MOCK", "false").lower() in ("1", "true")
     
     class Config:
         env_file = ".env"

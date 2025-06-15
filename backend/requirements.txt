@@ -1,7 +1,8 @@
-fastapi==0.104.1
-uvicorn==0.24.0
-python-dotenv==1.0.0
-requests==2.31.0
+# Full dependency list for development environments.
+# Requires Python 3.11. For restricted or Python 3.12 environments,
+# install ``requirements-core.txt`` instead.
+-r requirements-core.txt
+
 qiskit==0.45.0
 qiskit-aer==0.12.0
 qiskit-ibm-runtime==0.15.0
@@ -10,23 +11,6 @@ qiskit-optimization>=0.6.0
 qiskit-finance==0.4.0
 qiskit-nature==0.6.2
 qiskit-machine-learning==0.7.0
-numpy==1.24.3
-pandas==2.1.3
-scikit-learn==1.3.2
 tensorflow==2.15.0
 torch==2.1.0
 transformers==4.35.2
-python-multipart==0.0.6
-pydantic==2.5.2
-python-jose==3.3.0
-passlib==1.7.4
-bcrypt==4.0.1
-websockets>=13.0
-aiohttp==3.9.0
-loguru==0.7.2
-nasdaq-data-link==1.0.4
-yfinance==0.1.70
-redis==5.0.1
-prometheus-client==0.19.0
-python-jose[cryptography]==3.3.0
-cryptography==41.0.5 

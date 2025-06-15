@@ -17,9 +17,9 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
  - IBM Quantum Experience API key
  - (Optional) OpenAI API key for enhanced language processing
 - Node.js 16+ (for local development)
-- Python 3.11 (for local development). Using Python 3.12 may lead to
-  dependency build failures; use the provided Docker environment or install
-  Python 3.11 via `pyenv` if necessary.
+- Python 3.11 (for full local development). Python 3.12 can be used in a
+  restricted/offline mode by installing `backend/requirements-core.txt`.
+  The heavy Qiskit stack is optional and only works reliably on Python 3.11.
 
 ## Setup
 
@@ -50,6 +50,9 @@ IBM_QUANTUM_PROJECT=main
 
 # Optional OpenAI API key for enhanced language features
 OPENAI_API_KEY=your_openai_api_key_here
+
+# Force use of mock Qiskit classes (recommended for Python 3.12)
+USE_QISKIT_MOCK=true
 ```
 
 4. Generate a secure API key:
@@ -86,7 +89,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 2. Install dependencies:
 ```bash
+# Full environment (requires Python 3.11)
 pip install -r requirements.txt
+
+# Offline/testing mode (Python 3.12)
+pip install -r requirements-core.txt
 ```
 
 3. Start the backend server:
@@ -111,11 +118,18 @@ npm start
 
 ### Offline/Testing Environment
 
-If installing the full Qiskit stack is not possible (for example when Python
-3.12 is the only available version), the backend can still be imported and unit
-tests run using the lightweight mock classes provided in `quantum_service.py`.
-These mocks allow the service to initialise without contacting IBM Quantum and
-return empty results for circuit execution.
+When Qiskit cannot be installed (such as on Python 3.12 or in a network
+restricted CI job) you can run the backend in an offline mode. Install only the
+core dependencies:
+
+```bash
+pip install -r backend/requirements-core.txt
+```
+
+Ensure the `.env` file contains `USE_QISKIT_MOCK=true` (the default in
+`.env.example`). With this flag enabled the service loads lightweight mock
+implementations found in `quantum_service.py`, allowing the application and
+tests to run without the real Qiskit libraries.
 
 
 ## Security Notes
