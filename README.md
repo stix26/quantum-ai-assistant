@@ -17,7 +17,7 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
  - IBM Quantum Experience API key
  - (Optional) OpenAI API key for enhanced language processing
 - Node.js 16+ (for local development)
-- Python 3.11 (for full local development). Python 3.12 can be used in a
+- Python 3.11 for the full environment. Python 3.12 can be used in a
   restricted/offline mode by installing `backend/requirements-core.txt`.
   The heavy Qiskit stack is optional and only works reliably on Python 3.11.
 
@@ -87,6 +87,11 @@ python3.11 -m venv venv  # ensure Python 3.11
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
+The repository provides two requirement files:
+`requirements.txt` installs the full stack including Qiskit and only works
+on Python 3.11. `requirements-core.txt` contains a minimal set of
+dependencies for offline testing or Python 3.12 environments.
+
 2. Install dependencies:
 ```bash
 # Full environment (requires Python 3.11)
@@ -130,6 +135,14 @@ Ensure the `.env` file contains `USE_QISKIT_MOCK=true` (the default in
 `.env.example`). With this flag enabled the service loads lightweight mock
 implementations found in `quantum_service.py`, allowing the application and
 tests to run without the real Qiskit libraries.
+
+### Running Tests
+
+Run the backend unit tests with the Qiskit mock enabled:
+
+```bash
+USE_QISKIT_MOCK=true pytest -q backend/tests
+```
 
 
 ## Security Notes
