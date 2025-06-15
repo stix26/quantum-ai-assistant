@@ -20,7 +20,17 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+  "web-vitals": "^2.1.4"
+  },
+  "overrides": {
+    "svgo": "^3.3.2",
+    "css-select": "^5.1.0",
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "resolve-url-loader": "^5.0.0",
+    "webpack-dev-server": "^5.2.2",
+    "@svgr/plugin-svgo": "^8.1.0",
+    "@svgr/webpack": "^8.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
