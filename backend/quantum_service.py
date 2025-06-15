@@ -10,21 +10,25 @@ from .config import settings, get_ibm_quantum_provider_config, get_backend_confi
 # dependencies cannot be installed (e.g. during offline testing), fall back to
 # lightweight mock implementations so that the rest of the application can be
 # imported and tested.
-QISKIT_AVAILABLE = True
-try:  # pragma: no cover - used only when Qiskit is present
-    from qiskit import QuantumCircuit, execute, transpile
-    from qiskit.providers.ibmq import IBMQ
-    from qiskit.quantum_info import Statevector, Operator
-    from qiskit.result import Result
-    from qiskit.visualization import plot_bloch_multivector, plot_state_city
-    from qiskit.ignis.mitigation.measurement import complete_meas_cal, CompleteMeasFitter
-    from qiskit.aer import AerSimulator
-    from qiskit.providers.aer.noise import NoiseModel
-    from qiskit.providers.aer.noise.errors import depolarizing_error
-except Exception as e:  # pragma: no cover - executed only without Qiskit
-    QISKIT_AVAILABLE = False
-    logger.warning(f"Qiskit not available: {e}. Using mock classes.")
+QISKIT_AVAILABLE = False
+if not settings.USE_QISKIT_MOCK:
+    try:  # pragma: no cover - used only when Qiskit is present
+        from qiskit import QuantumCircuit, execute, transpile
+        from qiskit.providers.ibmq import IBMQ
+        from qiskit.quantum_info import Statevector, Operator
+        from qiskit.result import Result
+        from qiskit.visualization import plot_bloch_multivector, plot_state_city
+        from qiskit.ignis.mitigation.measurement import complete_meas_cal, CompleteMeasFitter
+        from qiskit.aer import AerSimulator
+        from qiskit.providers.aer.noise import NoiseModel
+        from qiskit.providers.aer.noise.errors import depolarizing_error
+        QISKIT_AVAILABLE = True
+    except Exception as e:  # pragma: no cover - executed only without Qiskit
+        logger.warning(f"Qiskit not available: {e}. Using mock classes.")
+else:
+    logger.info("USE_QISKIT_MOCK enabled - using mock classes")
 
+if not QISKIT_AVAILABLE:
     class QuantumCircuit:  # type: ignore
         def __init__(self, num_qubits: int = 1):
             self.num_qubits = num_qubits
