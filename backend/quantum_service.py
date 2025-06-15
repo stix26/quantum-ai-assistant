@@ -1,20 +1,83 @@
 from typing import Dict, Any, List, Optional, Tuple
 import numpy as np
-from qiskit import QuantumCircuit, execute, transpile
-from qiskit.providers.ibmq import IBMQ
-from qiskit.providers.ibmq.runtime import RuntimeJob
-from qiskit.quantum_info import Statevector, Operator
-from qiskit.result import Result
-from qiskit.visualization import plot_bloch_multivector, plot_state_city
-from qiskit.ignis.mitigation.measurement import complete_meas_cal, CompleteMeasFitter
-from qiskit.aer import AerSimulator
-from qiskit.providers.aer.noise import NoiseModel
-from qiskit.providers.aer.noise.errors import depolarizing_error
-import matplotlib.pyplot as plt
 import io
 import base64
+import matplotlib.pyplot as plt
 from loguru import logger
 from .config import settings, get_ibm_quantum_provider_config, get_backend_config
+
+# Optional Qiskit imports. When running in environments where the heavy
+# dependencies cannot be installed (e.g. during offline testing), fall back to
+# lightweight mock implementations so that the rest of the application can be
+# imported and tested.
+QISKIT_AVAILABLE = True
+try:  # pragma: no cover - used only when Qiskit is present
+    from qiskit import QuantumCircuit, execute, transpile
+    from qiskit.providers.ibmq import IBMQ
+    from qiskit.quantum_info import Statevector, Operator
+    from qiskit.result import Result
+    from qiskit.visualization import plot_bloch_multivector, plot_state_city
+    from qiskit.ignis.mitigation.measurement import complete_meas_cal, CompleteMeasFitter
+    from qiskit.aer import AerSimulator
+    from qiskit.providers.aer.noise import NoiseModel
+    from qiskit.providers.aer.noise.errors import depolarizing_error
+except Exception as e:  # pragma: no cover - executed only without Qiskit
+    QISKIT_AVAILABLE = False
+    logger.warning(f"Qiskit not available: {e}. Using mock classes.")
+
+    class QuantumCircuit:  # type: ignore
+        def __init__(self, num_qubits: int = 1):
+            self.num_qubits = num_qubits
+        def measure_all(self) -> None:
+            pass
+        def x(self, *args: Any) -> None:
+            pass
+        def h(self, *args: Any) -> None:
+            pass
+        def cx(self, *args: Any) -> None:
+            pass
+        def ry(self, *args: Any) -> None:
+            pass
+
+    class AerSimulator:  # type: ignore
+        pass
+
+    class NoiseModel:  # type: ignore
+        pass
+
+    class Operator:  # type: ignore
+        pass
+
+    class Result(dict):  # type: ignore
+        def get_counts(self) -> Dict[str, int]:
+            return {}
+
+    def execute(*args: Any, **kwargs: Any) -> Result:  # type: ignore
+        return Result()
+
+    def transpile(circuit: QuantumCircuit, *args: Any, **kwargs: Any) -> QuantumCircuit:  # type: ignore
+        return circuit
+
+    def depolarizing_error(*args: Any, **kwargs: Any) -> None:  # type: ignore
+        return None
+
+    def complete_meas_cal(*args: Any, **kwargs: Any) -> Tuple[None, List[str]]:  # type: ignore
+        return None, []
+
+    class CompleteMeasFitter:  # type: ignore
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
+
+        class filter:  # noqa: D401 - simple wrapper
+            @staticmethod
+            def apply(result: Result) -> Result:
+                return result
+
+    def plot_bloch_multivector(*args: Any, **kwargs: Any) -> None:  # type: ignore
+        return None
+
+    def plot_state_city(*args: Any, **kwargs: Any) -> None:  # type: ignore
+        return None
 
 class QuantumService:
     def __init__(self):

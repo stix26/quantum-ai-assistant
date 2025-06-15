@@ -17,7 +17,9 @@ A sophisticated quantum-powered AI assistant that leverages IBM Quantum Experien
  - IBM Quantum Experience API key
  - (Optional) OpenAI API key for enhanced language processing
 - Node.js 16+ (for local development)
-- Python 3.11 (for local development)
+- Python 3.11 (for local development). Using Python 3.12 may lead to
+  dependency build failures; use the provided Docker environment or install
+  Python 3.11 via `pyenv` if necessary.
 
 ## Setup
 
@@ -78,7 +80,7 @@ docker-compose up --build
 1. Create a Python virtual environment:
 ```bash
 cd backend
-python -m venv venv
+python3.11 -m venv venv  # ensure Python 3.11
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
@@ -106,6 +108,15 @@ npm install --save-dev @types/d3
 ```bash
 npm start
 ```
+
+### Offline/Testing Environment
+
+If installing the full Qiskit stack is not possible (for example when Python
+3.12 is the only available version), the backend can still be imported and unit
+tests run using the lightweight mock classes provided in `quantum_service.py`.
+These mocks allow the service to initialise without contacting IBM Quantum and
+return empty results for circuit execution.
+
 
 ## Security Notes
 

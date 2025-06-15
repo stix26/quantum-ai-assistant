@@ -70,3 +70,4 @@ Thumbs.db
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.deb
