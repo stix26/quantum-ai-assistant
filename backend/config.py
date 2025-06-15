@@ -1,7 +1,11 @@
 import os
 from dotenv import load_dotenv
 from typing import Dict, Any, Optional
-from pydantic import BaseSettings
+
+try:  # Pydantic <2.2
+    from pydantic import BaseSettings
+except Exception:  # pragma: no cover - for Pydantic >=2.2
+    from pydantic_settings import BaseSettings
 
 # Load environment variables
 load_dotenv()

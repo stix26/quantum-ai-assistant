@@ -1,4 +1,5 @@
-FROM python:3.9-slim
+# Use Python 3.11 which is compatible with the pinned Qiskit versions
+FROM python:3.11-slim
 
 WORKDIR /app
 
