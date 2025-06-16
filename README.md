@@ -148,6 +148,13 @@ Run the backend unit tests with the Qiskit mock enabled:
 USE_QISKIT_MOCK=true pytest -q backend/tests
 ```
 
+Run the frontend tests:
+```bash
+cd frontend
+npm install
+CI=true npm test
+```
+
 
 ## Security Notes
 

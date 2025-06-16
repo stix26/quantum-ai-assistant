@@ -14,3 +14,4 @@ qiskit-machine-learning==0.7.0
 tensorflow==2.15.0
 torch==2.1.0
 transformers==4.35.2
+loguru==0.7.3
