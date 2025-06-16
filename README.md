@@ -53,6 +53,10 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 # Force use of mock Qiskit classes (recommended for Python 3.12)
 USE_QISKIT_MOCK=true
+
+# Host and port for the backend server
+HOST=127.0.0.1
+PORT=8000
 ```
 
 4. Generate a secure API key:
@@ -103,7 +107,7 @@ pip install -r requirements-core.txt
 
 3. Start the backend server:
 ```bash
-uvicorn main:app --reload
+python main.py
 ```
 
 #### Frontend
