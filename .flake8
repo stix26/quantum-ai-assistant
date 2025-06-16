@@ -1,0 +1,3 @@
+[flake8]
+exclude = frontend/node_modules
+max-line-length = 120

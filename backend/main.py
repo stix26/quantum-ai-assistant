@@ -2,29 +2,28 @@ from fastapi import (
     FastAPI,
     WebSocket,
     HTTPException,
-    Depends,
     Security,
     BackgroundTasks,
     Request,
 )
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any
 import os
 from dotenv import load_dotenv
 from loguru import logger
-import json
-import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from passlib.context import CryptContext
 import redis
 from prometheus_client import Counter, Histogram, start_http_server
-import aiohttp
-from .quantum_service import quantum_service, QuantumCircuit, execute
-from .config import settings
+from .quantum_service import quantum_service
+
+try:
+    from qiskit_ibm_runtime import QiskitRuntimeService
+except Exception:  # pragma: no cover - qiskit not installed
+    QiskitRuntimeService = None  # type: ignore
 
 # Load environment variables
 load_dotenv()
@@ -32,7 +31,9 @@ load_dotenv()
 # Initialize FastAPI app with advanced configuration
 app = FastAPI(
     title="Quantum Chatbot API",
-    description="Advanced quantum-enhanced chatbot with machine learning capabilities",
+    description=(
+        "Advanced quantum-enhanced chatbot with machine learning capabilities"
+    ),
     version="2.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
