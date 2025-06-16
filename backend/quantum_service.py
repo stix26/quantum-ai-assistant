@@ -179,12 +179,14 @@ class QuantumService:
             else:
                 # Fall back to simulator
                 logger.info("Using simulator as fallback")
-                return execute(circuit, self.simulator, shots=shots).result()
+                job = execute(circuit, self.simulator, shots=shots)
+                return job.result() if hasattr(job, "result") else job
                 
         except Exception as e:
             logger.error(f"Error executing circuit: {e}")
             # Fall back to simulator
-            return execute(circuit, self.simulator, shots=shots).result()
+            job = execute(circuit, self.simulator, shots=shots)
+            return job.result() if hasattr(job, "result") else job
 
     def apply_error_mitigation(self, result: Result, circuit: QuantumCircuit) -> Result:
         """Apply error mitigation to the results."""
@@ -254,9 +256,20 @@ class QuantumService:
         """Analyze the quantum state and return metrics."""
         counts = result.get_counts()
         total_shots = sum(counts.values())
-        
+
+        if total_shots == 0:
+            return {
+                "counts": counts,
+                "probabilities": {},
+                "entropy": 0.0,
+                "purity": 0.0,
+                "coherence": 0.0,
+                "most_probable_state": None,
+                "most_probable_probability": 0.0,
+            }
+
         # Calculate probabilities
-        probabilities = {state: count/total_shots for state, count in counts.items()}
+        probabilities = {state: count / total_shots for state, count in counts.items()}
         
         # Calculate entropy
         entropy = -sum(p * np.log2(p) for p in probabilities.values())

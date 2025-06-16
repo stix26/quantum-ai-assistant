@@ -183,11 +183,11 @@ def calculate_confidence(metrics: Dict[str, float]) -> float:
 def generate_suggested_topics(metrics: Dict[str, float]) -> List[str]:
     # Generate topic suggestions based on quantum metrics
     topics = []
-    if metrics["entanglement"] > 0.7:
-        topics.append("Quantum Entanglement")
-    if metrics["purity"] > 0.8:
+    if metrics.get("entropy", 1.0) < 0.3:
+        topics.append("Low Entropy States")
+    if metrics.get("purity", 0.0) > 0.8:
         topics.append("Quantum State Purity")
-    if metrics["coherence"] > 0.6:
+    if metrics.get("coherence", 0.0) > 0.6:
         topics.append("Quantum Coherence")
     return topics
 
