@@ -247,6 +247,31 @@ async def root():
     }
 
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for CI/CD and monitoring."""
+    try:
+        # Check Redis connection
+        redis_status = "healthy" if redis_client.ping() else "unhealthy"
+        
+        # Check quantum service
+        quantum_status = "healthy" if quantum_service else "unhealthy"
+        
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "services": {
+                "redis": redis_status,
+                "quantum_service": quantum_status,
+                "api": "healthy"
+            },
+            "version": "2.0.0"
+        }
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        raise HTTPException(status_code=503, detail="Service unhealthy")
+
+
 @app.post("/chat", response_model=QuantumResponse)
 async def chat(
     message: ChatMessage,
