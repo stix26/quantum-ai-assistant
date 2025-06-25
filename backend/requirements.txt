@@ -10,7 +10,7 @@ qiskit-ibm-provider==0.11.0
 qiskit-optimization>=0.6.0
 qiskit-finance==0.4.0
 qiskit-nature==0.6.2
-qiskit-machine-learning==0.7.0
+qiskit-machine-learning==0.8.3
 tensorflow==2.19.0
 torch==2.7.1
 transformers==4.52.4
