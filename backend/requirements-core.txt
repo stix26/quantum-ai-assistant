@@ -18,5 +18,5 @@ yfinance==0.2.64
 redis==6.2.0
 prometheus-client==0.22.1
 python-jose[cryptography]==3.5.0
-cryptography==45.0.4
+cryptography==45.0.5
 matplotlib>=3.8
