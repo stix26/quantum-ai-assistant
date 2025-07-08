@@ -13,5 +13,5 @@ qiskit-nature==0.7.2
 qiskit-machine-learning==0.8.3
 tensorflow==2.19.0
 torch==2.7.1
-transformers==4.53.0
+transformers==4.53.1
 loguru==0.7.3
