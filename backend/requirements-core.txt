@@ -15,7 +15,7 @@ aiohttp==3.13.1
 loguru==0.7.3
 nasdaq-data-link==1.0.4
 yfinance==0.2.65
-redis==7.0.1
+redis==7.1.0
 prometheus-client==0.22.1
 python-jose[cryptography]==3.5.0
 cryptography==46.0.3
