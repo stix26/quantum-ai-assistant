@@ -16,7 +16,7 @@ loguru==0.7.3
 nasdaq-data-link==1.0.4
 yfinance==0.2.65
 redis==7.0.1
-prometheus-client==0.22.1
+prometheus-client==0.23.1
 python-jose[cryptography]==3.5.0
 cryptography==46.0.3
 matplotlib>=3.8
